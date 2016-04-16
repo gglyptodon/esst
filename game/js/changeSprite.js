@@ -7,6 +7,13 @@ function preload() {
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.spritesheet('dude1', 'assets/dude1.png', 32, 48);
+    // sounds
+    game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
+    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
+    game.load.audio('saw', ['assets/sounds/saw2.ogg']);
+    game.load.audio('sword', ['assets/sounds/sword.ogg']);
+    game.load.audio('transform', ['assets/sounds/transform0.ogg']);
+
 
 }
 
@@ -91,6 +98,14 @@ function create() {
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
+    // sound effects
+    music = game.add.audio('bgmusic');
+    boing = game.add.audio('boing');
+    saw = game.add.audio('saw');
+    sword = game.add.audio('sword');
+    transform = game.add.audio('transform');
+
+    music.play();
 
 }
 
@@ -158,15 +173,13 @@ function collectStar (player, star) {
 
 
 function shapeshift(player) {
+    transform.play();
     switch (player.key) {
         case 'dude':
-            player.key = 'dude1';
             player.loadTexture('dude1', 0);
             xvel = 350;
-            console.log(xvel, "xvl");
             break;
         case 'dude1':
-            player.key = 'dude';
             player.loadTexture('dude', 0);
             xvel = 150;
             break;
