@@ -53,7 +53,7 @@ var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_
 
 var time_font;
 var score_font;
-var total = 5;
+var total = 25;
 var stateText;
 function create() {
 
@@ -80,10 +80,13 @@ function create() {
     gameover_font = game.add.retroFont('knightHawks', 31, 25, Phaser.RetroFont.TEXT_SET6, 10, 1, 1);
     //for (var c = 1; c < 19; c++)
     //{
-    var time_txt = game.add.image(game.world.centerX,  16, time_font);
-
+//    var time_txt = game.add.image(game.world.centerX,  16, time_font);
+    var time_txt = game.add.image(500,  16, time_font);
     var score_txt = game.add.image(0, 16, score_font);//'score: 0', { fontSize: '32px', fill: '#000' });
-    var gameover_txt = game.add.image(game.world.centerX/2, game.world.centerY,gameover_font);
+    var gameover_txt = game.add.image(250, 300, gameover_font);
+    gameover_txt.fixedToCamera = true;
+    score_txt.fixedToCamera = true;
+    time_txt.fixedToCamera = true;
     //stateText = game.add.image(0, 16, time_font);
     //stateText.anchor.setTo(0.5, 0.5);
     //stateText.visible = false;
