@@ -12,7 +12,7 @@ function preload() {
     game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
     game.load.spritesheet('tortuga_samurai', 'assets/tortuga_samurai.png', 68, 35);
-    game.load.spritesheet('tortuga_tentacle', 'assets/tortuga_tentacle.png', 68, 57);
+    game.load.spritesheet('tortuga_tentacle', 'assets/tortuga_tentacle.png', 68, 38);
     game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 35);
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 35);
 
@@ -127,9 +127,9 @@ function create() {
     stars.enableBody = true;
 
     //  Here we'll create 12 of them evenly spaced apart
-    for (var i = 0; i < 12; i++)
+    for (var i = 0; i < 42; i++)
     {
-        for (var j=0; j < 4; j++)
+        for (var j=0; j < 23; j++)
         {
             //  Create a star inside of the 'stars' group
             var star = stars.create(i * 70, j * 100, 'star');
