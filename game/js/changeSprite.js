@@ -11,10 +11,10 @@ function preload() {
     game.load.spritesheet('tortuga_small', 'assets/tortuga_small.png', 68, 35);
     game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
-    game.load.spritesheet('tortuga_samurai', 'assets/tortuga_samurai.png', 68, 35);
+    game.load.spritesheet('tortuga_samurai', 'assets/tortuga_samurai.png', 68, 52);
     game.load.spritesheet('tortuga_tentacle', 'assets/tortuga_tentacle.png', 68, 38);
-    game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 35);
-    game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 35);
+    game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 36);
+    game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
