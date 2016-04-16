@@ -76,6 +76,7 @@ function create() {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
+    console.log(player.body.gravity.y, "gravityy");
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
@@ -211,6 +212,9 @@ function shapeshift(player) {
             console.log("");
     }
 
+    player.body.bounce.y = bouncy_y;
+    player.body.bounce.x = bouncy_x;
+    player.body.gravity.y = gravity_y;
 
 
     //player = game.add.sprite(player.x, player.y, 'dude1');
