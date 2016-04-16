@@ -30,7 +30,7 @@ var score = 0;
 var scoreText;
 
 var xvel = 150;
-var yvel = 350;
+var yvel = 50;
 var bouncy_y = 0.2;
 var bouncy_x = 0.3;
 var gravity_y = 300;
@@ -193,11 +193,13 @@ function shapeshift(player) {
             gravity_y = 300;
 
             xvel = 150;
+            yvel = 50;
             break;
         case 'tortuga_hide':
             boing.play();
             player.loadTexture('tortuga_bouncy', 0);
             xvel = 350;
+            yvel = 350;
             bouncy_y = 1.0;
             bouncy_x = 0.9;
             gravity_y = 50;
@@ -205,6 +207,7 @@ function shapeshift(player) {
         case 'tortuga_bouncy':
             player.loadTexture('tortuga_small', 0);
             xvel = 150;
+            yvel = 10;
             bouncy_y = 0.2;
             bouncy_x = 0.2;
             gravity_y = 300;
