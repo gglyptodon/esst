@@ -2,7 +2,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 var bg;
 function preload() {
 
-    game.load.image('sky', 'assets/level1.png');
+    game.load.image('sky', 'assets/skyfun.png');
     game.load.image('ground', 'assets/platform.png');
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
@@ -269,6 +269,7 @@ function makeLevel(level) {
             console.log(level);
             //  A simple background for our game
             bg = game.add.tileSprite(0, 0,800,600, 'sky');
+            bg.scale.setTo(4, 4);
 
             //  The platforms group contains the ground and the 2 ledges we can jump on
             platforms = game.add.group();
