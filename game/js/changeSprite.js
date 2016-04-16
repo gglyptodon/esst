@@ -11,6 +11,11 @@ function preload() {
     game.load.spritesheet('tortuga_small', 'assets/tortuga_small.png', 68, 35);
     game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
+    game.load.spritesheet('tortuga_samurai', 'assets/tortuga_samurai.png', 68, 35);
+    game.load.spritesheet('tortuga_tentacle', 'assets/tortuga_tetacle.png', 68, 57);
+    game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 35);
+    game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 35);
+
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
     game.load.audio('boing', ['assets/sounds/boing2.ogg']);
@@ -34,6 +39,9 @@ var yvel = 50;
 var bouncy_y = 0.2;
 var bouncy_x = 0.3;
 var gravity_y = 300;
+
+var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle'];
+
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -110,9 +118,10 @@ function update() {
     if (cursors.left.isDown)
     {
         //  Move to the left
-        player.body.velocity.x = -150;
+        player.body.velocity.x = -xvel;
 
         player.animations.play('left');
+        console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
     }
     else if (cursors.right.isDown)
     {
@@ -148,7 +157,7 @@ function collectStar (player, star) {
 
     // Removes the star from the screen
     star.kill();
-    shapeshift(player);
+    shapeshift(player, choice(shape_choices));
 
 
     //  Add and update the score
@@ -158,37 +167,85 @@ function collectStar (player, star) {
 }
 
 
-function shapeshift(player) {
+function shapeshift(player, newkey) {
+    function reset_defaults(){
+        player.loadTexture('tortuga_small', 0);
+        bouncy_y = 0.2;
+        bouncy_x = 0.2;
+        gravity_y = 300;
+        xvel = 150;
+        yvel = 50;
+        //player.animations.add('left', [0, 1], 10, true);
+        //player.animations.add('right', [2,3], 10, true);
+    }
+    function set_tortuga_bouncy(){
+        reset_defaults();
+        player.loadTexture('tortuga_bouncy', 0);
+        bouncy_y = 1.0;
+        bouncy_x = 0.9;
+        gravity_y = 50;
+        xvel = 150;
+        yvel = 350;
+        player.body.bounce.y = bouncy_y;
+        player.body.bounce.x = bouncy_x;
+        player.body.gravity.y = gravity_y;
+    }
+    function set_tortuga_samurai(){
+        reset_defaults();
+        player.loadTexture('tortuga_samurai', 0);
+        xvel = 350;
+    }
+    function set_tortuga_small(){
+        reset_defaults();
+        player.loadTexture('tortuga_small', 0);
+
+    }
+    function set_tortuga_saw(){
+        reset_defaults();
+        player.loadTexture('tortuga_saw', 0);
+        xvel = 750;
+
+    }
+    function set_tortuga_mine(){
+        reset_defaults();
+        player.loadTexture('tortuga_mine', 0);
+
+    }
+    function set_tortuga_tentacle(){
+        reset_defaults();
+        player.loadTexture('tortuga_tentacle', 0);
+
+    }
+    function set_tortuga_hide(){
+        reset_defaults();
+        player.loadTexture('tortuga_hide', 0);
+    }
+
     transform.play();
-    switch (player.key) {
+    console.log(newkey);
+    switch (newkey) {
         case 'tortuga_small':
-            player.loadTexture('tortuga_hide', 0);
-
-            bouncy_y = 0.2;
-            bouncy_x = 0.2;
-            gravity_y = 300;
-
-            xvel = 150;
-            yvel = 50;
+            set_tortuga_small();
             break;
         case 'tortuga_hide':
-            boing.play();
-            player.loadTexture('tortuga_bouncy', 0);
-            xvel = 350;
-            yvel = 350;
-            bouncy_y = 1.0;
-            bouncy_x = 0.9;
-            gravity_y = 50;
+            set_tortuga_hide();
             break;
         case 'tortuga_bouncy':
-            player.loadTexture('tortuga_small', 0);
-            xvel = 150;
-            yvel = 10;
-            bouncy_y = 0.2;
-            bouncy_x = 0.2;
-            gravity_y = 300;
-            player.animations.add('left', [0, 1], 10, true);
-            player.animations.add('right', [2,3], 10, true);
+            boing.play();
+            set_tortuga_bouncy();
+
+            break;
+        case 'tortuga_samurai':
+            set_tortuga_samurai();
+            break;
+        case 'tortuga_saw':
+            set_tortuga_saw();
+            break;
+        case 'tortuga_mine':
+            set_tortuga_mine();
+            break;
+        case 'tortuga_tentacle':
+            set_tortuga_tentacle();
             break;
         default:
             console.log("");
@@ -198,22 +255,12 @@ function shapeshift(player) {
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
 
-
-    //player = game.add.sprite(player.x, player.y, 'dude1');
-    //
-    //
-    ////  We need to enable physics on the player
-    //game.physics.arcade.enable(player);
-    //
-    ////  Player physics properties. Give the little guy a slight bounce.
-    //player.body.bounce.y = 0.2;
-    //player.body.gravity.y = 300;
-    //player.body.collideWorldBounds = true;
-    //
-    ////  Our two animations, walking left and right.
-
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
+
+
+    //player.animations.add('left', [0, 1], 10, true);
+    //player.animations.add('right', [2,3], 10, true);
 }
 
 function makeLevel(level) {
@@ -318,4 +365,8 @@ function makeLevel(level) {
             console.log(level);
     }
 
+}
+function choice(choices) {
+  var index = Math.floor(Math.random() * choices.length);
+  return choices[index];
 }
