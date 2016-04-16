@@ -67,6 +67,7 @@ function create() {
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'tortuga_small');
 
+
 //272px × 57
     //288px × 48px
     //  We need to enable physics on the player
@@ -80,8 +81,8 @@ function create() {
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.animations.add('left', [0, 1], 10, true);
+    player.animations.add('right', [2,3], 10, true);
 
     //  Finally some stars to collect
     stars = game.add.group();
@@ -207,6 +208,8 @@ function shapeshift(player) {
             bouncy_y = 0.2;
             bouncy_x = 0.2;
             gravity_y = 300;
+            player.animations.add('left', [0, 1], 10, true);
+            player.animations.add('right', [2,3], 10, true);
             break;
         default:
             console.log("");
@@ -229,6 +232,7 @@ function shapeshift(player) {
     //player.body.collideWorldBounds = true;
     //
     ////  Our two animations, walking left and right.
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
+
+    player.animations.add('left', [0, 1], 10, true);
+    player.animations.add('right', [2,3], 10, true);
 }
