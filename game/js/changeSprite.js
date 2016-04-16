@@ -136,7 +136,7 @@ function update() {
         player.body.velocity.y = -yvel;
     }
     //scroll bg
-    bg.tilePosition.x -=1;
+    bg.tilePosition.x -=0.5;
 
 }
 function render(){
