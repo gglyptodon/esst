@@ -23,6 +23,11 @@ function preload() {
     game.load.audio('sword', ['assets/sounds/sword.ogg']);
     game.load.audio('transform', ['assets/sounds/transform0.ogg']);
 
+    game.load.image('tiles-1', 'assets/tilemap.png');
+
+    game.load.tilemap('level1', 'assets/maps/level0.json', null, Phaser.Tilemap.TILED_JSON);
+
+
 
 }
 
@@ -47,6 +52,14 @@ function create() {
     //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
     makeLevel(1);
+    map = game.add.tilemap('level1');
+    map.addTilesetImage('tiles-1');
+    layer = map.createLayer('Tile Layer 1');
+
+    //  Un-comment this on to see the collision tiles
+    layer.debug = true;
+
+    //layer.resizeWorld();
 
 
 
