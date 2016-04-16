@@ -18,8 +18,8 @@ function preload() {
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
-    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
-    game.load.audio('saw', ['assets/sounds/saw2.ogg']);
+//    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
+//    game.load.audio('saw', ['assets/sounds/saw2.ogg']);
     game.load.audio('sword', ['assets/sounds/sword.ogg']);
     game.load.audio('transform', ['assets/sounds/transform0.ogg']);
 
@@ -53,17 +53,20 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     makeLevel(1);
     map = game.add.tilemap('level1');
-    map.addTilesetImage('tiles-1');
-    layer = map.createLayer('Tile Layer 1');
-
+    //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
+    map.addTilesetImage('lkj', 'tiles-1');
+    //create layer
+    blockedlayer = map.createLayer('Tile Layer 1');
+    //collision on blockedLayer
+    map.setCollisionBetween(1, 600, true, 'Tile Layer 1');
     //  Un-comment this on to see the collision tiles
-    layer.debug = true;
+    //    layer.debug = true;
 
-    //layer.resizeWorld();
+    //resizes the game world to match the layer dimensions
+    blockedlayer.resizeWorld();
 
 
-
-//272px × 57
+    //272px × 57
     //288px × 48px
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
@@ -88,14 +91,17 @@ function create() {
     //  Here we'll create 12 of them evenly spaced apart
     for (var i = 0; i < 12; i++)
     {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 70, 0, 'star');
-
-        //  Let gravity do its thing
-        star.body.gravity.y = 300;
-
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
+        for (var j=0; j < 4; j++)
+        {
+            //  Create a star inside of the 'stars' group
+            var star = stars.create(i * 70, j * 100, 'star');
+    
+            //  Let gravity do its thing
+            star.body.gravity.y = 300;
+    
+            //  This just gives each star a slightly random bounce value
+            star.body.bounce.y = 0.7 + Math.random() * 0.2;
+        }
     }
 
     //  The score
@@ -105,12 +111,13 @@ function create() {
     cursors = game.input.keyboard.createCursorKeys();
     // sound effects
     music = game.add.audio('bgmusic');
-    boing = game.add.audio('boing');
-    saw = game.add.audio('saw');
+    //boing = game.add.audio('boing');
+    //saw = game.add.audio('saw');
     sword = game.add.audio('sword');
     transform = game.add.audio('transform');
 
     music.play();
+    game.camera.follow(player);
 
 }
 
@@ -121,6 +128,8 @@ function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(player, blockedlayer);
+    game.physics.arcade.collide(stars, blockedlayer);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
@@ -244,7 +253,7 @@ function shapeshift(player, newkey) {
             set_tortuga_hide();
             break;
         case 'tortuga_bouncy':
-            boing.play();
+            //boing.play();
             set_tortuga_bouncy();
 
             break;
@@ -290,40 +299,9 @@ function makeLevel(level) {
             //  We will enable physics for any object that is created in this group
             platforms.enableBody = true;
 
-            // Here we create the ground.
-            var ground = platforms.create(0, game.world.height - 64, 'ground');
-
-            //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-            ground.scale.setTo(2, 2);
-
-            //  This stops it from falling away when you jump on it
-            ground.body.immovable = true;
-
-            //  Now let's create and scale two ledges
-            var ledge = platforms.create(200, 0, 'ground');
-            ledge.scale.setTo(0.3, 15);
-            ledge.body.immovable = true;
-
-            ledge = platforms.create(game.world.width - 200, 400, 'ground');
-            ledge.scale.setTo(0.5, 5);
-            ledge.body.immovable = true;
-
             // The player and its settings
             player = game.add.sprite(32, game.world.height - 150, 'tortuga_small');
             // The player and its settings
-            //player = game.add.sprite(32, game.world.height - 150, 'dude');
-
-            //  We need to enable physics on the player
-            //game.physics.arcade.enable(player);
-
-            //  Player physics properties. Give the little guy a slight bounce.
-            //player.body.bounce.y = 0.2;
-            //player.body.gravity.y = 300;
-            //player.body.collideWorldBounds = true;
-
-            //  Our two animations, walking left and right.
-            //player.animations.add('left', [0, 1, 2, 3], 10, true);
-            //player.animations.add('right', [5, 6, 7, 8], 10, true);
 
             //  Finally some stars to collect
             stars = game.add.group();
