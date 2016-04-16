@@ -7,6 +7,8 @@ function preload() {
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.spritesheet('dude1', 'assets/dude1.png', 32, 48);
+//    game.load.spritesheet('explosion', 'assets/explosion.png', 136, 136);
+    game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
     // elderly shapeshifting samurai tortuga
     game.load.spritesheet('tortuga_small', 'assets/tortuga_small.png', 68, 35);
     game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
@@ -38,7 +40,7 @@ function preload() {
 var player;
 var platforms;
 var cursors;
-
+var explosions;
 var stars;
 var score = 0;
 //var scoreText;
@@ -119,7 +121,17 @@ function create() {
     //  Our two animations, walking left and right.
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
-
+    
+    //  An explosion pool
+    explosions = game.add.group();
+    explosions.enableBody = true;
+    explosions.physicsBodyType = Phaser.Physics.ARCADE;
+    explosions.createMultiple(30, 'explosion');
+    explosions.setAll('anchor.x', 0.5);
+    explosions.setAll('anchor.y', 0.5);
+    explosions.forEach( function(explosion) {
+        explosion.animations.add('explosion');
+    });
     //  Finally some stars to collect
     stars = game.add.group();
 
@@ -178,6 +190,8 @@ function update() {
     game.physics.arcade.collide(stars, platforms);
     game.physics.arcade.collide(player, blockedlayer);
     game.physics.arcade.collide(stars, blockedlayer);
+    // check for burnt in explosion things
+    game.physics.arcade.overlap(explosions, blockedlayer, burnBlocks, null, this);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
@@ -210,10 +224,19 @@ function update() {
     }
 
     //  Allow the player to jump if they are touching the ground.
-    if (cursors.up.isDown && player.body.touching.down)
+    if (cursors.up.isDown && player.body.blocked.down) 
     {
         player.body.velocity.y = -yvel;
+    } 
+    //  Explode the mine turtle on space press
+    if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && player.key == "tortuga_mine")
+    { 
+//        var explosion = explosions.create(player.x - player.width/2, player.y - player.height, 'explosion'); //todo, predeclare in preload and then select later
+//        explosion.animations.add('explode', [0, 4], 10, false);
+//        explosion.animations.play('explode');
+        burnBlocks(player, blockedlayer);
     }
+
     //scroll bg
     bg.tilePosition.x -=0.5;
     time_font.text = "Time: " + total;
@@ -224,9 +247,8 @@ function update() {
         gameover_font.text = "Game Over";
         gameover_font.visible = true;
     }
-
-
 }
+
 function render(){
      //game.debug.body(player);
     // game.debug.inputInfo(32, 32);
@@ -236,6 +258,19 @@ function render(){
     //game.debug.text('Loop Count: ' + total, 32, 64);
 
 }
+
+// probably more what the explosion should look like, TODO
+// a thanks to https://github.com/jschomay/phaser-demo-game/blob/873b9a19f39af9155a822da70f9935c58f8d0d64/game.js
+function burnBlocks(player, blockedlayer) {
+    var explosion = explosions.getFirstExists(false);
+    explosion.reset(player.body.x + player.body.halfWidth, player.body.y + player.body.halfHeight);
+    explosion.body.velocity.y = player.body.velocity.y;
+    explosion.alpha = 0.7;
+    explosion.play('explosion', 30, false, true);
+    shapeshift(player, choice(shape_choices));
+//    blockedlayer.kill(); todo, select blocks under explosion
+}
+
 
 function collectStar (player, star) {
 
@@ -252,7 +287,7 @@ function collectStar (player, star) {
 
 
 function shapeshift(player, newkey) {
-    function reset_defaults(){
+    function reset_defaults(){ 
         player.loadTexture('tortuga_small', 0);
         bouncy_y = 0.2;
         bouncy_x = 0.2;
@@ -298,7 +333,6 @@ function shapeshift(player, newkey) {
     function set_tortuga_tentacle(){
         reset_defaults();
         player.loadTexture('tortuga_tentacle', 0);
-
     }
     function set_tortuga_hide(){
         reset_defaults();
@@ -334,7 +368,8 @@ function shapeshift(player, newkey) {
         default:
             console.log("");
     }
-
+    player.body.y = player.body.y - (player.height - player.body.height)
+    player.body.height = player.height; // to keep different sized sprites going through the floor
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
