@@ -7,6 +7,10 @@ function preload() {
     game.load.image('star', 'assets/star.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.spritesheet('dude1', 'assets/dude1.png', 32, 48);
+    // elderly shapeshifting samurai tortuga
+    game.load.spritesheet('tortuga_small', 'assets/tortuga_small.png', 68, 35);
+    game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
+    game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
     game.load.audio('boing', ['assets/sounds/boing2.ogg']);
@@ -27,7 +31,9 @@ var scoreText;
 
 var xvel = 150;
 var yvel = 350;
-
+var bouncy_y = 0.2;
+var bouncy_x = 0.3;
+var gravity_y = 300;
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -59,15 +65,17 @@ function create() {
     ledge.body.immovable = true;
 
     // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    player = game.add.sprite(32, game.world.height - 150, 'tortuga_small');
 
-
+//272px × 57
+    //288px × 48px
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
 
     //  Player physics properties. Give the little guy a slight bounce.
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.bounce.y = bouncy_y;
+    player.body.bounce.x = bouncy_x;
+    player.body.gravity.y = gravity_y;
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
@@ -175,13 +183,29 @@ function collectStar (player, star) {
 function shapeshift(player) {
     transform.play();
     switch (player.key) {
-        case 'dude':
-            player.loadTexture('dude1', 0);
-            xvel = 350;
-            break;
-        case 'dude1':
-            player.loadTexture('dude', 0);
+        case 'tortuga_small':
+            player.loadTexture('tortuga_hide', 0);
+
+            bouncy_y = 0.2;
+            bouncy_x = 0.2;
+            gravity_y = 300;
+
             xvel = 150;
+            break;
+        case 'tortuga_hide':
+            boing.play();
+            player.loadTexture('tortuga_bouncy', 0);
+            xvel = 350;
+            bouncy_y = 1.0;
+            bouncy_x = 0.9;
+            gravity_y = 50;
+            break;
+        case 'tortuga_bouncy':
+            player.loadTexture('tortuga_small', 0);
+            xvel = 150;
+            bouncy_y = 0.2;
+            bouncy_x = 0.2;
+            gravity_y = 300;
             break;
         default:
             console.log("");
