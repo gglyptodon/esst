@@ -27,6 +27,10 @@ function preload() {
 
     game.load.tilemap('level1', 'assets/maps/level0.json', null, Phaser.Tilemap.TILED_JSON);
 
+    //added for timer
+    game.load.image('knightHawks', 'assets/fonts/KNIGHT3.png');
+    game.load.image('gameover', 'assets/gameover.png');
+
 
 
 }
@@ -37,7 +41,7 @@ var cursors;
 
 var stars;
 var score = 0;
-var scoreText;
+//var scoreText;
 
 var xvel = 150;
 var yvel = 50;
@@ -47,6 +51,10 @@ var gravity_y = 300;
 
 var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle'];
 
+var time_font;
+var score_font;
+var total = 5;
+var stateText;
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -60,6 +68,30 @@ function create() {
     layer.debug = true;
 
     //layer.resizeWorld();
+    time_font = game.add.retroFont('knightHawks', 31, 25, Phaser.RetroFont.TEXT_SET6, 10, 1, 1);
+    score_font = game.add.retroFont('knightHawks', 31, 25, Phaser.RetroFont.TEXT_SET6, 10, 1, 1);
+    gameover_font = game.add.retroFont('knightHawks', 31, 25, Phaser.RetroFont.TEXT_SET6, 10, 1, 1);
+    //for (var c = 1; c < 19; c++)
+    //{
+    var time_txt = game.add.image(game.world.centerX,  16, time_font);
+
+    var score_txt = game.add.image(0, 16, score_font);//'score: 0', { fontSize: '32px', fill: '#000' });
+    var gameover_txt = game.add.image(game.world.centerX/2, game.world.centerY,gameover_font);
+    //stateText = game.add.image(0, 16, time_font);
+    //stateText.anchor.setTo(0.5, 0.5);
+    //stateText.visible = false;
+
+        //  Create our Timer
+    timer = game.time.create(false);
+
+    //  Set a TimerEvent to occur after 2 seconds
+    timer.loop(1000, updateCounter, this);
+
+    //  Start the timer running - this is important!
+    //  It won't start automatically, allowing you to hook it to button events and the like.
+
+
+    timer.start();
 
 
 
@@ -99,22 +131,30 @@ function create() {
     }
 
     //  The score
-    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    //scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
     // sound effects
     music = game.add.audio('bgmusic');
     boing = game.add.audio('boing');
-    saw = game.add.audio('saw');
+     saw = game.add.audio('saw');
     sword = game.add.audio('sword');
     transform = game.add.audio('transform');
 
     music.play();
 
 }
+function displayGameOver(){
+    console.log("gameover");
+    pictureGameOver.loadTexture('pictureGameOver');
+}
 
+function updateCounter() {
 
+    total--;
+
+}
 
 function update() {
 
@@ -159,11 +199,25 @@ function update() {
     }
     //scroll bg
     bg.tilePosition.x -=0.5;
+    time_font.text = "Time: " + total;
+    score_font.text = "Score: "+score;
+    if (total < 1){
+        player.kill();
+        timer.stop();
+        gameover_font.text = "Game Over";
+        gameover_font.visible = true;
+    }
+
 
 }
 function render(){
      //game.debug.body(player);
-     game.debug.inputInfo(32, 32);
+    // game.debug.inputInfo(32, 32);
+
+
+    //game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
+    //game.debug.text('Loop Count: ' + total, 32, 64);
+
 }
 
 function collectStar (player, star) {
@@ -175,7 +229,7 @@ function collectStar (player, star) {
 
     //  Add and update the score
     score += 10;
-    scoreText.text = 'Score: ' + score;
+    //scoreText.text = 'Score: ' + score;
 
 }
 
