@@ -2,13 +2,8 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 var bg;
 function preload() {
 
+    //bg
     game.load.image('sky', 'assets/skyfun.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.spritesheet('dude1', 'assets/dude1.png', 32, 48);
-//    game.load.spritesheet('explosion', 'assets/explosion.png', 136, 136);
-    game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
     // elderly shapeshifting samurai tortuga
     game.load.spritesheet('tortuga_small', 'assets/tortuga_small.png', 68, 35);
     game.load.spritesheet('tortuga_bouncy', 'assets/tortuga_bouncy.png', 68, 57);
@@ -18,6 +13,15 @@ function preload() {
     game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 36);
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
     game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
+
+    //actions
+    game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
+    game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
+
+    //items
+    game.load.image('star', 'assets/star.png');
+    game.load.image('food', 'assets/firstaid.png');
+
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
@@ -39,10 +43,10 @@ function preload() {
 }
 
 var player;
-var platforms;
 var cursors;
 var explosions;
 var stars;
+var foods;
 var score = 0;
 //var scoreText;
 
@@ -51,6 +55,19 @@ var yvel = 50;
 var bouncy_y = 0.2;
 var bouncy_x = 0.3;
 var gravity_y = 300;
+
+
+var player2;
+var cursors_p2;
+var score_p2 = 0;
+//var scoreText;
+
+var xvel_p2 = 150;
+var yvel_p2 = 50;
+var bouncy_y_p2 = 0.2;
+var bouncy_x_p2 = 0.3;
+var gravity_y_p2 = 300;
+
 
 var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle', 'tortuga_wings'];
 
@@ -135,12 +152,13 @@ function create() {
     });
     //  Finally some stars to collect
     stars = game.add.group();
+    foods = game.add.group();
 
     //  We will enable physics for any star that is created in this group
     stars.enableBody = true;
+    foods.enableBody = true;
 
-    //  Here we'll create 12 of them evenly spaced apart
-    for (var i = 0; i < 42; i++)
+    for (var i = 0; i < 22; i++)
     {
         for (var j=0; j < 23; j++)
         {
@@ -151,9 +169,24 @@ function create() {
             star.body.gravity.y = 300;
     
             //  This just gives each star a slightly random bounce value
-            star.body.bounce.y = 0.7 + Math.random() * 0.2;
+            star.body.bounce.y = 0.2 + Math.random() * 0.9;
         }
     }
+    for (var i = 0; i < 10; i++)
+    {
+        for (var j=0; j < 2; j++)
+        {
+            //  Create a star inside of the 'stars' group
+            var food = foods.create(i * 70, j * 100, 'food');
+
+            //  Let gravity do its thing
+            food.body.gravity.y = 300;
+
+            //  This just gives each star a slightly random bounce value
+            food.body.bounce.y = 0.7 + Math.random() * 0.2;
+        }
+    }
+
 
     //  The score
     //scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
@@ -187,10 +220,12 @@ function updateCounter() {
 function update() {
 
     //  Collide the player and the stars with the platforms
-    game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
+    //game.physics.arcade.collide(player, platforms);
+    //game.physics.arcade.collide(stars, platforms);
     //game.physics.arcade.collide(player, blockedlayer);
     game.physics.arcade.collide(stars, blockedlayer);
+    game.physics.arcade.collide(foods, blockedlayer);
+
     // check for burnt in explosion things
     game.physics.arcade.overlap(explosions, blockedlayer, burnBlocks, null, this);
 
