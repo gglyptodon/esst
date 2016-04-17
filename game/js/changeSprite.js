@@ -112,7 +112,7 @@ function create() {
 //    var time_txt = game.add.image(game.world.centerX,  16, time_font);
     var time_txt = game.add.image(500,  16, time_font);
     var score_txt = game.add.image(0, 16, score_font);//'score: 0', { fontSize: '32px', fill: '#000' });
-    var gameover_txt = game.add.image(150, 300, gameover_font);
+    var gameover_txt = game.add.image(20, 250, gameover_font);
     gameover_txt.fixedToCamera = true;
     score_txt.fixedToCamera = true;
     time_txt.fixedToCamera = true;
@@ -345,7 +345,25 @@ function update() {
     if (total < 1){
         player.kill();
         timer.stop();
-        gameover_font.text = "Time Up! Score: "+score;
+
+
+        var oldhighscore = localStorage.getItem("esst");
+        var newscore = score;
+
+        if (oldhighscore && oldhighscore != newscore){
+            if (score > +oldhighscore){
+                gameover_font.text = "New Highscore!";
+                localStorage.setItem("esst", score);
+            }
+            else{
+                gameover_font.text = "Time's Up! Highscore:"+oldhighscore;
+            }
+        }
+        else {
+            gameover_font.text = "New Highscore!!! "+score;
+            localStorage.setItem("esst", score);
+        }
+        //gameover_font.text = "Time's Up! Score: "+score;
         gameover_font.visible = true;
         music.stop();
     }
