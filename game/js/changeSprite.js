@@ -13,7 +13,8 @@ function preload() {
     game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 36);
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
     game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
-
+    game.load.spritesheet('tortuga_tentacleR', 'assets/tortuga_tentacleR.png', 38, 68);
+    game.load.spritesheet('tortuga_tentacleU', 'assets/tortuga_tentacleU.png', 68, 38);
 
     //actions
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
@@ -22,7 +23,6 @@ function preload() {
     //items
     game.load.image('star', 'assets/star.png');
     game.load.image('food', 'assets/firstaid.png');
-
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/Shinobi_3_Oboro_Drive_OC_ReMix.ogg']);
@@ -82,6 +82,8 @@ var time_font;
 var score_font;
 var total = 30;
 var stateText;
+
+
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -146,7 +148,7 @@ function create() {
     //  Our two animations, walking left and right.
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
-    
+
     //  An explosion pool
     explosions = game.add.group();
     explosions.enableBody = true;
@@ -219,7 +221,7 @@ function create() {
 
 }
 function displayGameOver(){
-    console.log("gameover");
+    //console.log("gameover");
     pictureGameOver.loadTexture('pictureGameOver');
 }
 
@@ -246,6 +248,8 @@ function update() {
     //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
+    //player.angle = 0;  // nolonger rotating, so meaningless
+
     //console.log(player.key);
 
     if (player.key == "tortuga_wings" && cursors.up.isDown){
@@ -258,13 +262,17 @@ function update() {
         //  Move to the left
         player.body.velocity.x = -xvel;
         player.animations.play('left');
+
         playSound(player, SOUND.move);
+
+
         //console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
         player.body.velocity.x = xvel;
+        //console.log("xv", xvel);
         player.animations.play('right');
         playSound(player,SOUND.move);
     }
@@ -282,6 +290,10 @@ function update() {
     {
         player.body.velocity.y = -yvel;
         playSound(player, SOUND.jump); //todo
+    }
+    if (canTentacleClimb(player))
+    {
+        player.body.velocity.y = -xvel/1.5
     } 
     //  Explode the mine turtle on space press
     if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && player.key == "tortuga_mine")
@@ -292,6 +304,36 @@ function update() {
         playSound(player, SOUND.explode);
         burnBlocks(player, blockedlayer);
     }
+    // Check hot keys for changing sprites
+    if (game.input.keyboard.isDown(Phaser.Keyboard.ONE))
+    {
+        shapeshift(player, shape_choices[1]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.TWO))
+    {
+        shapeshift(player, shape_choices[2]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.THREE))
+    {
+        shapeshift(player, shape_choices[3]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.FOUR))
+    {
+        shapeshift(player, shape_choices[4]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.FIVE))
+    {
+        shapeshift(player, shape_choices[5]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.SIX))
+    {
+        shapeshift(player, shape_choices[6]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.SEVEN))
+    {
+        shapeshift(player, shape_choices[7]);
+    }
+
 
     //scroll bg
     bg.tilePosition.x -=0.5;
@@ -314,6 +356,54 @@ function render(){
     //game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
     //game.debug.text('Loop Count: ' + total, 32, 64);
 
+}
+
+// 
+function canTentacleClimb(aplayer){
+    ret = false;
+    // check player form
+    tentacle_keys = ["tortuga_tentacle", "tortuga_tentacleR", "tortuga_tentacleU"]
+    if (tentacle_keys.indexOf(aplayer.key) >= 0)
+    {
+        // check if we are blocked by a wall or ceiling
+        if (aplayer.body.blocked.right || aplayer.body.blocked.left)
+        {
+            ret = true;
+            if (aplayer.key != "tortuga_tentacleR")
+            {
+                shapeshift(player, 'tortuga_tentacleR');
+                if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+                {
+                    player.body.x = player.body.x - 30;
+		    //console.log("DEB x-30 ",player.x, player.body.x);
+                }
+
+            }
+        
+        }
+        else if (aplayer.body.blocked.up)
+        {
+            ret = true;
+            if (aplayer.key != "tortuga_tentacleU")
+            {
+                shapeshift(player, 'tortuga_tentacleU');
+
+            } 
+           
+        }
+        else
+        {
+            if (aplayer.key != "tortuga_tentacle")
+            {
+                shapeshift(player, 'tortuga_tentacle');
+
+            }
+
+        }
+
+    }
+
+    return ret;
 }
 
 // probably more what the explosion should look like, TODO
@@ -457,6 +547,16 @@ function shapeshift(player, newkey) {
         reset_defaults();
         player.loadTexture('tortuga_tentacle', 0);
     }
+    // rotated tentacle for climbing
+    function set_tortuga_tentacleR(){
+        reset_defaults();
+        player.loadTexture('tortuga_tentacleR', 0);
+    }
+    // upsidedown for going along ceiling
+    function set_tortuga_tentacleU(){
+        reset_defaults();
+        player.loadTexture('tortuga_tentacleU', 0);
+    }  
     function set_tortuga_wings(){
         reset_defaults();
         player.loadTexture('tortuga_wings',0)
@@ -466,7 +566,9 @@ function shapeshift(player, newkey) {
         player.loadTexture('tortuga_hide', 0);
     }
 
+
     //transform.play();
+
     //console.log(newkey);
     switch (newkey) {
         case 'tortuga_small':
@@ -492,6 +594,12 @@ function shapeshift(player, newkey) {
         case 'tortuga_tentacle':
             set_tortuga_tentacle();
             break;
+        case 'tortuga_tentacleR':
+            set_tortuga_tentacleR();
+            break;
+        case 'tortuga_tentacleU':
+            set_tortuga_tentacleU();
+            break;
         case 'tortuga_wings':
             set_tortuga_wings();
         default:
@@ -502,8 +610,11 @@ function shapeshift(player, newkey) {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
+    // make sure body and texture match
     player.body.y = player.body.y - (player.height - player.body.height);
     player.body.height = player.height;
+    player.body.x = player.body.x - (player.width - player.body.width);
+    player.body.width = player.width;
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
 
@@ -515,7 +626,7 @@ function shapeshift(player, newkey) {
 function makeLevel(level) {
     switch (level) {
         case 1:
-            console.log(level);
+            //console.log(level);
             //  A simple background for our game
             bg = game.add.tileSprite(0, 0,800,600, 'sky');
             bg.scale.setTo(4, 4);
