@@ -30,6 +30,8 @@ function preload() {
     game.load.audio('sword', ['assets/sounds/sword.ogg']);
     game.load.audio('transform', ['assets/sounds/transform.ogg']);
     game.load.audio('explode',['assets/sounds/explosion.ogg']);
+    game.load.audio('hallo',['assets/sounds/hallo.ogg']);
+    game.load.audio('wings',['assets/sounds/birdflap.ogg']);
 
     game.load.image('tiles-1', 'assets/tilemap.png');
 
@@ -70,7 +72,7 @@ var gravity_y = 300;
 //var gravity_y_p2 = 300;
 
 
-var SOUND = {jump:'jump', explode:'explode', move:'move'};
+var SOUND = {jump:'jump', explode:'explode', move:'move', appear:'appear'};
 
 var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle', 'tortuga_wings'];
 
@@ -207,6 +209,8 @@ function create() {
     explode = game.add.audio('explode');
     sword = game.add.audio('sword');
     transform = game.add.audio('transform');
+    hallo = game.add.audio('hallo');
+    wings = game.add.audio('wings');
 
     music.play();
     game.camera.follow(player);
@@ -251,16 +255,14 @@ function update() {
     {
         //  Move to the left
         player.body.velocity.x = -xvel;
-
         player.animations.play('left');
+        playSound(player, SOUND.move);
         //console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
         player.body.velocity.x = xvel;
-        //console.log("xv", xvel);
-
         player.animations.play('right');
         playSound(player,SOUND.move);
     }
@@ -347,9 +349,10 @@ function destroyBlocks(player, block){
 }
 
 function playSound(player, soundId){
+
     switch(player.key){
         case 'tortuga_bouncy':
-            if (soundId == SOUND.jump){
+            if (soundId == SOUND.jump || soundId == SOUND.appear){
                 boing.play();
             }
             break;
@@ -359,14 +362,30 @@ function playSound(player, soundId){
                 explode.play();
                 console.log("exp");
             }
+            if (soundId == SOUND.appear){
+                hallo.play();
+            }
+
             break;
         case 'tortuga_saw':
-            if(soundId == SOUND.move) {
+            if(soundId == SOUND.appear) {
                 saw.play();
             }
             break;
+        case 'tortuga_samurai':
+            if(soundId == SOUND.appear) {
+                sword.play();
+            }
+            break;
+        case 'tortuga_wings':
+            if(soundId == SOUND.appear){
+                wings.play();
+            }
         default:
-            saw.stop();
+            if(saw.isPlaying){
+                saw.stop();
+            }
+
     }
 }
 
@@ -440,7 +459,7 @@ function shapeshift(player, newkey) {
         player.loadTexture('tortuga_hide', 0);
     }
 
-    transform.play();
+    //transform.play();
     //console.log(newkey);
     switch (newkey) {
         case 'tortuga_small':
@@ -481,7 +500,7 @@ function shapeshift(player, newkey) {
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
 
-
+    playSound(player, SOUND.appear);
     //player.animations.add('left', [0, 1], 10, true);
     //player.animations.add('right', [2,3], 10, true);
 }
