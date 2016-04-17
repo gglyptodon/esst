@@ -296,7 +296,7 @@ function update() {
         player.body.velocity.y = -xvel/1.5
     } 
     //  Explode the mine turtle on space press
-    if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && player.key == "tortuga_mine")
+    if (game.input.keyboard.isDown(Phaser.Keyboard.SHIFT) && player.key == "tortuga_mine")
     { 
 //        var explosion = explosions.create(player.x - player.width/2, player.y - player.height, 'explosion'); //todo, predeclare in preload and then select later
 //        explosion.animations.add('explode', [0, 4], 10, false);
@@ -415,6 +415,7 @@ function burnBlocks(player, blockedlayer) {
     explosion.alpha = 0.7;
     explosion.play('explosion', 30, false, true);
     shapeshift(player, choice(shape_choices));
+    player.body.velocity.y = -300;
   //  blockedlayer.kill(); todo, select blocks under explosion
 }
 
