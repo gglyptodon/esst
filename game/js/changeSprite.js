@@ -276,6 +276,10 @@ function update() {
         player.animations.play('right');
         playSound(player,SOUND.move);
     }
+    else if (cursors.up.isDown && player.key == 'tortuga_wings')
+    {
+        player.animations.play('left');   
+    }
 
     else
     {
@@ -415,6 +419,7 @@ function burnBlocks(player, blockedlayer) {
     explosion.alpha = 0.7;
     explosion.play('explosion', 30, false, true);
     shapeshift(player, choice(shape_choices));
+    player.body.velocity.y = -300;
   //  blockedlayer.kill(); todo, select blocks under explosion
 }
 
@@ -434,6 +439,7 @@ function collectFood(player, food){
     score +=15;
 }
 function destroyBlocks(player, block){
+    console.log('dBlocks:',player.key);
     //console.log('destroyblocks', player, block);
     if(player.key == 'tortuga_samurai'){
         removeTile(player, block);
@@ -486,9 +492,15 @@ function playSound(player, soundId){
     }
 }
 
-removeTile = function(player, tile){   tile.alpha = 0;
-    tile.collideDown = false;   tile.collideUp = false;   tile.collideRight = false;
-    tile.collideLeft = false;   blockedlayer.dirty = true;};
+removeTile = function(player, tile) {
+    console.log(player, tile)
+    tile.alpha = 0;
+    tile.collideDown = false;   
+    tile.collideUp = false;   
+    tile.collideRight = false;
+    tile.collideLeft = false;   
+    blockedlayer.dirty = true;
+}
 //update = function(){    game.physics.arcade.collide(player, tile_layer, removeTile);};
 
 
