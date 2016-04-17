@@ -170,20 +170,23 @@ function create() {
     
             //  This just gives each star a slightly random bounce value
             star.body.bounce.y = 0.2 + Math.random() * 0.9;
+            star.body.velocity.x = 0 + Math.random() * 10 * choice([-1,1])*choice([0,1]);
+            star.body.velocity.y = 0 + Math.random() * 10 * choice([-1,1])*choice([0,1]);
         }
     }
     for (var i = 0; i < 10; i++)
     {
         for (var j=0; j < 2; j++)
         {
-            //  Create a star inside of the 'stars' group
             var food = foods.create(i * 70, j * 100, 'food');
 
             //  Let gravity do its thing
-            food.body.gravity.y = 300;
+            food.body.gravity.y = 200;
 
             //  This just gives each star a slightly random bounce value
-            food.body.bounce.y = 0.7 + Math.random() * 0.2;
+            food.body.bounce.y = 0.5 + Math.random() * 0.6;
+            food.body.velocity.x = 0 + Math.random() * 20 * choice([-1,1]);
+            food.body.velocity.y = 0 + Math.random() * 10;
         }
     }
 
@@ -231,6 +234,7 @@ function update() {
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
+    game.physics.arcade.overlap(player, foods, collectFood, null, this);
     game.physics.arcade.overlap(player, blockedlayer, destroyBlocks, null, this);
     //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
@@ -327,6 +331,10 @@ function collectStar (player, star) {
     score += 10;
     //scoreText.text = 'Score: ' + score;
 
+}
+function collectFood(player, food){
+    food.kill()
+    score +=50;
 }
 function destroyBlocks(player, block){
     console.log('destroyblocks', player, block);
