@@ -14,6 +14,7 @@ function preload() {
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
     game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
 
+
     //actions
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
     game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
@@ -32,6 +33,7 @@ function preload() {
     game.load.audio('explode',['assets/sounds/explosion.ogg']);
     game.load.audio('hallo',['assets/sounds/hallo.ogg']);
     game.load.audio('wings',['assets/sounds/birdflap.ogg']);
+    game.load.audio('tentacle',['assets/sounds/tentacle.ogg']);
 
     game.load.image('tiles-1', 'assets/tilemap.png');
 
@@ -211,7 +213,7 @@ function create() {
     transform = game.add.audio('transform');
     hallo = game.add.audio('hallo');
     wings = game.add.audio('wings');
-
+    tentacle = game.add.audio('tentacle');
     music.play();
     game.camera.follow(player);
 
@@ -380,6 +382,11 @@ function playSound(player, soundId){
         case 'tortuga_wings':
             if(soundId == SOUND.appear){
                 wings.play();
+            }
+            break;
+        case 'tortuga_tentacle':
+            if (soundId == SOUND.appear){
+                tentacle.play();
             }
         default:
             if(saw.isPlaying){
