@@ -276,7 +276,10 @@ function update() {
         player.animations.play('right');
         playSound(player,SOUND.move);
     }
-
+    else if (player.key == "tortuga_wings" && cursors.up.isDown)
+    {
+        player.animations.play('left');
+    }
     else
     {
         //  Stand still
