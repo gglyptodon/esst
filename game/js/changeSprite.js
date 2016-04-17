@@ -13,7 +13,7 @@ function preload() {
     game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 36);
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
     game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
-
+    game.load.spritesheet('tortuga_tentacleR', 'assets/tortuga_tentacleR.png', 38, 68);
     //actions
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
     game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
@@ -133,13 +133,13 @@ function create() {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
-    console.log(player.body.gravity.y, "gravityy");
+    //console.log(player.body.gravity.y, "gravityy");
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
-    
+
     //  An explosion pool
     explosions = game.add.group();
     explosions.enableBody = true;
@@ -210,7 +210,7 @@ function create() {
 
 }
 function displayGameOver(){
-    console.log("gameover");
+    //console.log("gameover");
     pictureGameOver.loadTexture('pictureGameOver');
 }
 
@@ -239,10 +239,11 @@ function update() {
     //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
-    console.log(player.key);
+    player.angle = 0; 
+    //console.log(player.key);
 
     if (player.key == "tortuga_wings" && cursors.up.isDown){
-        console.log("ttt");
+        //console.log("ttt");
         player.body.velocity.y = -xvel;
     }
 
@@ -252,13 +253,13 @@ function update() {
         player.body.velocity.x = -xvel;
 
         player.animations.play('left');
-        console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
+        //console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
         player.body.velocity.x = xvel;
-        console.log("xv", xvel);
+        //console.log("xv", xvel);
 
         player.animations.play('right');
     }
@@ -275,6 +276,10 @@ function update() {
     if (cursors.up.isDown && player.body.blocked.down) 
     {
         player.body.velocity.y = -yvel;
+    }
+    if (canTentacleClimb(player))
+    {
+        player.body.velocity.y = -xvel/1.5
     } 
     //  Explode the mine turtle on space press
     if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && player.key == "tortuga_mine")
@@ -284,6 +289,36 @@ function update() {
 //        explosion.animations.play('explode');
         burnBlocks(player, blockedlayer);
     }
+    // Check hot keys for changing sprites
+    if (game.input.keyboard.isDown(Phaser.Keyboard.ONE))
+    {
+        shapeshift(player, shape_choices[1]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.TWO))
+    {
+        shapeshift(player, shape_choices[2]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.THREE))
+    {
+        shapeshift(player, shape_choices[3]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.FOUR))
+    {
+        shapeshift(player, shape_choices[4]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.FIVE))
+    {
+        shapeshift(player, shape_choices[5]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.SIX))
+    {
+        shapeshift(player, shape_choices[6]);
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.SEVEN))
+    {
+        shapeshift(player, shape_choices[7]);
+    }
+
 
     //scroll bg
     bg.tilePosition.x -=0.5;
@@ -306,6 +341,33 @@ function render(){
     //game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
     //game.debug.text('Loop Count: ' + total, 32, 64);
 
+}
+
+// 
+function canTentacleClimb(aplayer){
+    ret = false;
+    // check player form
+    if (aplayer.key in ["tortuga_tentacle", "tortuga_tentacleR"])
+    {
+        // check if we are blocked by a wall or ceiling
+        if (aplayer.body.blocked.right || aplayer.body.blocked.left || aplayer.body.blocked.up)
+        {
+            ret = true;
+            if (aplayer.body.blocked.right)
+            {
+                shapeshift(player, 'tortuga_tentacleR');
+            }
+            else if (aplayer.body.blocked.left)
+            {
+                player.angle = 90;
+            }
+            else if (aplayer.body.blocked.up)
+            {
+                player.angle = 180;
+            }
+        }
+    }
+    return ret;
 }
 
 // probably more what the explosion should look like, TODO
@@ -336,7 +398,7 @@ function collectFood(player, food){
     score +=15;
 }
 function destroyBlocks(player, block){
-    console.log('destroyblocks', player, block);
+    //console.log('destroyblocks', player, block);
     if(player.key == 'tortuga_samurai'){
         removeTile(player, block);
     }
@@ -402,6 +464,10 @@ function shapeshift(player, newkey) {
         reset_defaults();
         player.loadTexture('tortuga_tentacle', 0);
     }
+    function set_tortuga_tentacleR(){
+        reset_defaults();
+        player.loadTexture('tortuga_tentacleR', 0);
+    }
     function set_tortuga_wings(){
         reset_defaults();
         player.loadTexture('tortuga_wings',0)
@@ -412,7 +478,7 @@ function shapeshift(player, newkey) {
     }
 
     transform.play();
-    console.log(newkey);
+    //console.log(newkey);
     switch (newkey) {
         case 'tortuga_small':
             set_tortuga_small();
@@ -437,6 +503,9 @@ function shapeshift(player, newkey) {
         case 'tortuga_tentacle':
             set_tortuga_tentacle();
             break;
+        case 'tortuga_tentacleR':
+            set_tortuga_tentacleR();
+            break;
         case 'tortuga_wings':
             set_tortuga_wings();
         default:
@@ -460,7 +529,7 @@ function shapeshift(player, newkey) {
 function makeLevel(level) {
     switch (level) {
         case 1:
-            console.log(level);
+            //console.log(level);
             //  A simple background for our game
             bg = game.add.tileSprite(0, 0,800,600, 'sky');
             bg.scale.setTo(4, 4);
