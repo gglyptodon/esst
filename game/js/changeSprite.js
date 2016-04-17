@@ -14,6 +14,7 @@ function preload() {
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
     game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
     game.load.spritesheet('tortuga_tentacleR', 'assets/tortuga_tentacleR.png', 38, 68);
+    game.load.spritesheet('tortuga_tentacleU', 'assets/tortuga_tentacleU.png', 68, 38);
     //actions
     game.load.spritesheet('tortuga_hide', 'assets/tortuga_hide.png', 68, 35);
     game.load.spritesheet('explosion', 'assets/explode.png', 128, 128);
@@ -21,7 +22,6 @@ function preload() {
     //items
     game.load.image('star', 'assets/star.png');
     game.load.image('food', 'assets/firstaid.png');
-
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/Shinobi_3_Oboro_Drive_OC_ReMix.ogg']);
@@ -75,6 +75,8 @@ var time_font;
 var score_font;
 var total = 30;
 var stateText;
+
+
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -347,26 +349,47 @@ function render(){
 function canTentacleClimb(aplayer){
     ret = false;
     // check player form
-    if (aplayer.key in ["tortuga_tentacle", "tortuga_tentacleR"])
+    tentacle_keys = ["tortuga_tentacle", "tortuga_tentacleR", "tortuga_tentacleU"]
+    if (tentacle_keys.indexOf(aplayer.key) >= 0)
     {
         // check if we are blocked by a wall or ceiling
-        if (aplayer.body.blocked.right || aplayer.body.blocked.left || aplayer.body.blocked.up)
+        if (aplayer.body.blocked.right || aplayer.body.blocked.left)
         {
             ret = true;
-            if (aplayer.body.blocked.right)
+            if (aplayer.key != "tortuga_tentacleR")
             {
                 shapeshift(player, 'tortuga_tentacleR');
+                if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+                {
+                    player.body.x = player.body.x - 30;
+		    //console.log("DEB x-30 ",player.x, player.body.x);
+                }
+
             }
-            else if (aplayer.body.blocked.left)
-            {
-                player.angle = 90;
-            }
-            else if (aplayer.body.blocked.up)
-            {
-                player.angle = 180;
-            }
+        
         }
+        else if (aplayer.body.blocked.up)
+        {
+            ret = true;
+            if (aplayer.key != "tortuga_tentacleU")
+            {
+                shapeshift(player, 'tortuga_tentacleU');
+
+            } 
+           
+        }
+        else
+        {
+            if (aplayer.key != "tortuga_tentacle")
+            {
+                shapeshift(player, 'tortuga_tentacle');
+
+            }
+
+        }
+
     }
+
     return ret;
 }
 
@@ -464,10 +487,16 @@ function shapeshift(player, newkey) {
         reset_defaults();
         player.loadTexture('tortuga_tentacle', 0);
     }
+    // rotated tentacle for climbing
     function set_tortuga_tentacleR(){
         reset_defaults();
         player.loadTexture('tortuga_tentacleR', 0);
     }
+    // upsidedown for going along ceiling
+    function set_tortuga_tentacleU(){
+        reset_defaults();
+        player.loadTexture('tortuga_tentacleU', 0);
+    }  
     function set_tortuga_wings(){
         reset_defaults();
         player.loadTexture('tortuga_wings',0)
@@ -506,6 +535,9 @@ function shapeshift(player, newkey) {
         case 'tortuga_tentacleR':
             set_tortuga_tentacleR();
             break;
+        case 'tortuga_tentacleU':
+            set_tortuga_tentacleU();
+            break;
         case 'tortuga_wings':
             set_tortuga_wings();
         default:
@@ -516,8 +548,11 @@ function shapeshift(player, newkey) {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
+    // make sure body and texture match
     player.body.y = player.body.y - (player.height - player.body.height);
     player.body.height = player.height;
+    player.body.x = player.body.x - (player.width - player.body.width);
+    player.body.width = player.width;
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
 
