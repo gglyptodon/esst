@@ -24,11 +24,11 @@ function preload() {
 
 
     // sounds
-    game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
+    game.load.audio('bgmusic', ['assets/sounds/Shinobi_3_Oboro_Drive_OC_ReMix.ogg']);
 //    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
 //    game.load.audio('saw', ['assets/sounds/saw2.ogg']);
     game.load.audio('sword', ['assets/sounds/sword.ogg']);
-    game.load.audio('transform', ['assets/sounds/transform0.ogg']);
+    game.load.audio('transform', ['assets/sounds/transform.ogg']);
 
     game.load.image('tiles-1', 'assets/tilemap.png');
 
@@ -73,7 +73,7 @@ var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_
 
 var time_font;
 var score_font;
-var total = 25;
+var total = 30;
 var stateText;
 function create() {
 
@@ -158,9 +158,9 @@ function create() {
     stars.enableBody = true;
     foods.enableBody = true;
 
-    for (var i = 0; i < 22; i++)
+    for (var i = 0; i < 30; i++)
     {
-        for (var j=0; j < 23; j++)
+        for (var j=0; j < 10; j++)
         {
             //  Create a star inside of the 'stars' group
             var star = stars.create(i * 70, j * 100, 'star');
@@ -169,14 +169,14 @@ function create() {
             star.body.gravity.y = 300;
     
             //  This just gives each star a slightly random bounce value
-            star.body.bounce.y = 0.2 + Math.random() * 0.9;
-            star.body.velocity.x = 0 + Math.random() * 10 * choice([-1,1])*choice([0,1]);
+            star.body.bounce.y = 0.3 + Math.random() * 0.6;
+            star.body.velocity.x = 0 + Math.random() * 20 * choice([-1,1])*choice([0,1]);
             star.body.velocity.y = 0 + Math.random() * 10 * choice([-1,1])*choice([0,1]);
         }
     }
     for (var i = 0; i < 10; i++)
     {
-        for (var j=0; j < 2; j++)
+        for (var j=0; j < 3; j++)
         {
             var food = foods.create(i * 70, j * 100, 'food');
 
@@ -294,6 +294,7 @@ function update() {
         timer.stop();
         gameover_font.text = "Time Up! Score: "+score;
         gameover_font.visible = true;
+        music.stop();
     }
 }
 
@@ -316,25 +317,23 @@ function burnBlocks(player, blockedlayer) {
     explosion.alpha = 0.7;
     explosion.play('explosion', 30, false, true);
     shapeshift(player, choice(shape_choices));
-//    blockedlayer.kill(); todo, select blocks under explosion
+  //  blockedlayer.kill(); todo, select blocks under explosion
 }
 
 
 function collectStar (player, star) {
-
     // Removes the star from the screen
     star.kill();
     shapeshift(player, choice(shape_choices));
-
-
     //  Add and update the score
     score += 10;
     //scoreText.text = 'Score: ' + score;
 
 }
 function collectFood(player, food){
-    food.kill()
-    score +=50;
+    food.kill();
+    total +=3;
+    score +=15;
 }
 function destroyBlocks(player, block){
     console.log('destroyblocks', player, block);
