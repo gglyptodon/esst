@@ -25,10 +25,11 @@ function preload() {
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/Shinobi_3_Oboro_Drive_OC_ReMix.ogg']);
-//    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
-//    game.load.audio('saw', ['assets/sounds/saw2.ogg']);
+    game.load.audio('boing', ['assets/sounds/boing2.ogg']);
+    game.load.audio('saw', ['assets/sounds/saw.ogg']);
     game.load.audio('sword', ['assets/sounds/sword.ogg']);
     game.load.audio('transform', ['assets/sounds/transform.ogg']);
+    game.load.audio('explode',['assets/sounds/explosion.ogg']);
 
     game.load.image('tiles-1', 'assets/tilemap.png');
 
@@ -56,18 +57,20 @@ var bouncy_y = 0.2;
 var bouncy_x = 0.3;
 var gravity_y = 300;
 
+//
+//var player2;
+//var cursors_p2;
+//var score_p2 = 0;
+////var scoreText;
+//
+//var xvel_p2 = 150;
+//var yvel_p2 = 50;
+//var bouncy_y_p2 = 0.2;
+//var bouncy_x_p2 = 0.3;
+//var gravity_y_p2 = 300;
 
-var player2;
-var cursors_p2;
-var score_p2 = 0;
-//var scoreText;
 
-var xvel_p2 = 150;
-var yvel_p2 = 50;
-var bouncy_y_p2 = 0.2;
-var bouncy_x_p2 = 0.3;
-var gravity_y_p2 = 300;
-
+var SOUND = {jump:'jump', explode:'explode', move:'move'};
 
 var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle', 'tortuga_wings'];
 
@@ -133,7 +136,7 @@ function create() {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
-    console.log(player.body.gravity.y, "gravityy");
+    //console.log(player.body.gravity.y, "gravityy");
     player.body.collideWorldBounds = true;
 
     //  Our two animations, walking left and right.
@@ -199,9 +202,9 @@ function create() {
     // sound effects
     music = game.add.audio('bgmusic');
 
-    //boing = game.add.audio('boing');
-    //saw = game.add.audio('saw');
-
+    boing = game.add.audio('boing');
+    saw = game.add.audio('saw');
+    explode = game.add.audio('explode');
     sword = game.add.audio('sword');
     transform = game.add.audio('transform');
 
@@ -215,9 +218,7 @@ function displayGameOver(){
 }
 
 function updateCounter() {
-
     total--;
-
 }
 
 function update() {
@@ -239,10 +240,10 @@ function update() {
     //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
-    console.log(player.key);
+    //console.log(player.key);
 
     if (player.key == "tortuga_wings" && cursors.up.isDown){
-        console.log("ttt");
+        //console.log("ttt");
         player.body.velocity.y = -xvel;
     }
 
@@ -252,15 +253,16 @@ function update() {
         player.body.velocity.x = -xvel;
 
         player.animations.play('left');
-        console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
+        //console.log(xvel, yvel, gravity_y, bouncy_x, bouncy_y,player.body.bounce.y );
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
         player.body.velocity.x = xvel;
-        console.log("xv", xvel);
+        //console.log("xv", xvel);
 
         player.animations.play('right');
+        playSound(player,SOUND.move);
     }
 
     else
@@ -275,6 +277,7 @@ function update() {
     if (cursors.up.isDown && player.body.blocked.down) 
     {
         player.body.velocity.y = -yvel;
+        playSound(player, SOUND.jump); //todo
     } 
     //  Explode the mine turtle on space press
     if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && player.key == "tortuga_mine")
@@ -282,6 +285,7 @@ function update() {
 //        var explosion = explosions.create(player.x - player.width/2, player.y - player.height, 'explosion'); //todo, predeclare in preload and then select later
 //        explosion.animations.add('explode', [0, 4], 10, false);
 //        explosion.animations.play('explode');
+        playSound(player, SOUND.explode);
         burnBlocks(player, blockedlayer);
     }
 
@@ -336,11 +340,36 @@ function collectFood(player, food){
     score +=15;
 }
 function destroyBlocks(player, block){
-    console.log('destroyblocks', player, block);
+    //console.log('destroyblocks', player, block);
     if(player.key == 'tortuga_samurai'){
         removeTile(player, block);
     }
 }
+
+function playSound(player, soundId){
+    switch(player.key){
+        case 'tortuga_bouncy':
+            if (soundId == SOUND.jump){
+                boing.play();
+            }
+            break;
+        case 'tortuga_mine':
+            console.log("mine")
+            if (soundId == SOUND.explode){
+                explode.play();
+                console.log("exp");
+            }
+            break;
+        case 'tortuga_saw':
+            if(soundId == SOUND.move) {
+                saw.play();
+            }
+            break;
+        default:
+            saw.stop();
+    }
+}
+
 removeTile = function(player, tile){   tile.alpha = 0;
     tile.collideDown = false;   tile.collideUp = false;   tile.collideRight = false;
     tile.collideLeft = false;   blockedlayer.dirty = true;};
@@ -412,7 +441,7 @@ function shapeshift(player, newkey) {
     }
 
     transform.play();
-    console.log(newkey);
+    //console.log(newkey);
     switch (newkey) {
         case 'tortuga_small':
             set_tortuga_small();
