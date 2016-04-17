@@ -95,7 +95,7 @@ function create() {
     //create layer
     blockedlayer = map.createLayer('Tile Layer 1');
     //collision on blockedLayer
-    map.setCollisionBetween(1, 600, true, 'Tile Layer 1');
+    map.setCollisionBetween(0, 600, true, 'Tile Layer 1', false);
     //  Un-comment this on to see the collision tiles
 
     //blockedlayer.debug = true;
@@ -713,3 +713,29 @@ function choice(choices) {
   var index = Math.floor(Math.random() * choices.length);
   return choices[index];
 }
+
+setCollisionBetweenMod = function (start, stop, collides, layer, recalculate) {
+
+    if (collides === undefined) { collides = true; }
+    if (recalculate === undefined) { recalculate = true; }
+
+    layer = this.getLayer(layer);
+
+    if (start > stop)
+    {
+        return;
+    }
+
+    for (var index = start; index <= stop; index++)
+    {
+        this.setCollisionByIndex(index, collides, layer, false);
+    }
+
+    if (recalculate)
+    {
+        //  Now re-calculate interesting faces
+        this.calculateFaces(layer);
+    }
+
+}
+
