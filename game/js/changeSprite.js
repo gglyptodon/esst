@@ -15,6 +15,7 @@ function preload() {
     game.load.spritesheet('tortuga_tentacle', 'assets/tortuga_tentacle.png', 68, 38);
     game.load.spritesheet('tortuga_saw', 'assets/tortuga_saw.png', 68, 36);
     game.load.spritesheet('tortuga_mine', 'assets/tortuga_mine.png', 68, 41);
+    game.load.spritesheet('tortuga_wings', 'assets/tortuga_wings.png', 68, 57);
 
     // sounds
     game.load.audio('bgmusic', ['assets/sounds/bgmusic1.ogg']);
@@ -49,7 +50,7 @@ var bouncy_y = 0.2;
 var bouncy_x = 0.3;
 var gravity_y = 300;
 
-var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle'];
+var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_bouncy', 'tortuga_mine', 'tortuga_tentacle', 'tortuga_wings'];
 
 var time_font;
 var score_font;
@@ -83,7 +84,7 @@ function create() {
 //    var time_txt = game.add.image(game.world.centerX,  16, time_font);
     var time_txt = game.add.image(500,  16, time_font);
     var score_txt = game.add.image(0, 16, score_font);//'score: 0', { fontSize: '32px', fill: '#000' });
-    var gameover_txt = game.add.image(250, 300, gameover_font);
+    var gameover_txt = game.add.image(150, 300, gameover_font);
     gameover_txt.fixedToCamera = true;
     score_txt.fixedToCamera = true;
     time_txt.fixedToCamera = true;
@@ -176,14 +177,21 @@ function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(stars, platforms);
-    game.physics.arcade.collide(player, blockedlayer);
+    //game.physics.arcade.collide(player, blockedlayer);
     game.physics.arcade.collide(stars, blockedlayer);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
-
+    game.physics.arcade.overlap(player, blockedlayer, destroyBlocks, null, this);
+    //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
+    console.log(player.key);
+
+    if (player.key == "tortuga_wings" && cursors.up.isDown){
+        console.log("ttt");
+        player.body.velocity.y = -xvel;
+    }
 
     if (cursors.left.isDown)
     {
@@ -201,6 +209,7 @@ function update() {
 
         player.animations.play('right');
     }
+
     else
     {
         //  Stand still
@@ -221,7 +230,7 @@ function update() {
     if (total < 1){
         player.kill();
         timer.stop();
-        gameover_font.text = "Game Over";
+        gameover_font.text = "Time Up! Score: "+score;
         gameover_font.visible = true;
     }
 
@@ -249,6 +258,16 @@ function collectStar (player, star) {
     //scoreText.text = 'Score: ' + score;
 
 }
+function destroyBlocks(player, block){
+    console.log('destroyblocks', player, block);
+    if(player.key == 'tortuga_samurai'){
+        removeTile(player, block);
+    }
+}
+removeTile = function(player, tile){   tile.alpha = 0;
+    tile.collideDown = false;   tile.collideUp = false;   tile.collideRight = false;
+    tile.collideLeft = false;   blockedlayer.dirty = true;};
+//update = function(){    game.physics.arcade.collide(player, tile_layer, removeTile);};
 
 
 function shapeshift(player, newkey) {
@@ -259,6 +278,11 @@ function shapeshift(player, newkey) {
         gravity_y = 300;
         xvel = 150;
         yvel = 50;
+        player.body.checkCollision.left = true;
+        player.body.checkCollision.right = true;
+        player.body.checkCollision.top = true;
+        player.body.checkCollision.bottom = true;
+
         //player.animations.add('left', [0, 1], 10, true);
         //player.animations.add('right', [2,3], 10, true);
     }
@@ -278,6 +302,8 @@ function shapeshift(player, newkey) {
         reset_defaults();
         player.loadTexture('tortuga_samurai', 0);
         xvel = 350;
+        player.body.checkCollision.left = false;
+        player.body.checkCollision.right = false;
     }
     function set_tortuga_small(){
         reset_defaults();
@@ -299,6 +325,10 @@ function shapeshift(player, newkey) {
         reset_defaults();
         player.loadTexture('tortuga_tentacle', 0);
 
+    }
+    function set_tortuga_wings(){
+        reset_defaults();
+        player.loadTexture('tortuga_wings',0)
     }
     function set_tortuga_hide(){
         reset_defaults();
@@ -331,6 +361,8 @@ function shapeshift(player, newkey) {
         case 'tortuga_tentacle':
             set_tortuga_tentacle();
             break;
+        case 'tortuga_wings':
+            set_tortuga_wings();
         default:
             console.log("");
     }
@@ -338,7 +370,8 @@ function shapeshift(player, newkey) {
     player.body.bounce.y = bouncy_y;
     player.body.bounce.x = bouncy_x;
     player.body.gravity.y = gravity_y;
-
+    player.body.y = player.body.y - (player.height - player.body.height);
+    player.body.height = player.height;
     player.animations.add('left', [0, 1], 10, true);
     player.animations.add('right', [2,3], 10, true);
 
@@ -381,6 +414,7 @@ function makeLevel(level) {
 
                 //  This just gives each star a slightly random bounce value
                 star.body.bounce.y = 0.7 + Math.random() * 0.2;
+                star.body.bounce.x = 0.7 + Math.random() * 0.2;
             }
 
 
