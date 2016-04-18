@@ -80,7 +80,7 @@ var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_
 
 var time_font;
 var score_font;
-var total = 30000;
+var total = 30;
 var stateText;
 
 
@@ -457,7 +457,7 @@ function collectFood(player, food){
     score +=15;
 }
 
-function removeTile2(player, tile) {  
+function removeTile(player, tile) {  
     //Do stuff with group_or_sprite (kill?)  
     map.removeTile(tile.x, tile.y);
 } 
@@ -465,7 +465,7 @@ function removeTile2(player, tile) {
 function destroyBlocks(player, block){
     //console.log('destroyblocks', player, block);
     if(player.key == 'tortuga_samurai'){
-        removeTile2(player, block);
+        removeTile(player, block);
     }
 }
 
@@ -515,9 +515,9 @@ function playSound(player, soundId){
     }
 }
 
-removeTile = function(player, tile){   tile.alpha = 0;
-    tile.collideDown = false;   tile.collideUp = false;   tile.collideRight = false;
-    tile.collideLeft = false;   blockedlayer.dirty = true;};
+//removeTile = function(player, tile){   tile.alpha = 0;
+//    tile.collideDown = false;   tile.collideUp = false;   tile.collideRight = false;
+//    tile.collideLeft = false;   blockedlayer.dirty = true;};
 //update = function(){    game.physics.arcade.collide(player, tile_layer, removeTile);};
 
 
