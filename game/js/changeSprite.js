@@ -80,7 +80,7 @@ var shape_choices = ['tortuga_small','tortuga_samurai', 'tortuga_saw', 'tortuga_
 
 var time_font;
 var score_font;
-var total = 30;
+var total = 30000;
 var stateText;
 
 
@@ -95,7 +95,7 @@ function create() {
     //create layer
     blockedlayer = map.createLayer('Tile Layer 1');
     //collision on blockedLayer
-    map.setCollisionBetween(1, 600, true, 'Tile Layer 1');
+    map.setCollisionBetween(1, 6000, true, 'Tile Layer 1');
     //  Un-comment this on to see the collision tiles
 
     //blockedlayer.debug = true;
@@ -239,12 +239,13 @@ function update() {
     game.physics.arcade.collide(foods, blockedlayer);
 
     // check for burnt in explosion things
-    game.physics.arcade.overlap(explosions, blockedlayer, burnBlocks, null, this);
+//    game.physics.arcade.overlap(explosions, blockedlayer, burnBlocks, null, this);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     game.physics.arcade.overlap(player, stars, collectStar, null, this);
     game.physics.arcade.overlap(player, foods, collectFood, null, this);
     game.physics.arcade.overlap(player, blockedlayer, destroyBlocks, null, this);
+    game.physics.arcade.collide(player, blockedlayer);
     //game.physics.arcade.overlap(player, platforms, destroyBlocks, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
@@ -455,10 +456,16 @@ function collectFood(player, food){
     total +=3;
     score +=15;
 }
+
+function removeTile2(player, tile) {  
+    //Do stuff with group_or_sprite (kill?)  
+    map.removeTile(tile.x, tile.y);
+} 
+
 function destroyBlocks(player, block){
     //console.log('destroyblocks', player, block);
     if(player.key == 'tortuga_samurai'){
-        removeTile(player, block);
+        removeTile2(player, block);
     }
 }
 
